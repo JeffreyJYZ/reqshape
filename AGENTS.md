@@ -14,7 +14,7 @@ Sibling tooling it depends on, same author:
 
 | tool | what reqshape takes from it |
 | --- | --- |
-| `mpc` (`~/dev/clis/oc-cmd-compare`) | `mpc --json` — per-model pricing, allowances, and the window ratios derived from `requestsPerFiveHour / requestsPerMonth` |
+| `mpc` (`~/dev/cmdcode-tools/oc-cmd-compare`) | `mpc --json` — per-model pricing, allowances, and the window ratios derived from `requestsPerFiveHour / requestsPerMonth` |
 | `cmduse` (Rust CLI) | `cmduse -1 --json` — the account's own request count for the period, printed as a context line only |
 
 `MPC_BIN` / `CMDUSE_BIN` point either call at a dev build.
