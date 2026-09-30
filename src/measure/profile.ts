@@ -1,5 +1,6 @@
 import type { Ask, Bucket, Profile, Req, Shape, Stats } from "~/types.ts";
-import { mean, stats } from "./stats.ts";
+import { sideProfiles } from "./sides.ts";
+import { emptyProfile, FIELDS, mean, reqProfile, stats } from "./stats.ts";
 
 const BUCKETS: Array<{ label: string; holds: (position: number) => boolean }> =
 	[
@@ -13,39 +14,14 @@ const BUCKETS: Array<{ label: string; holds: (position: number) => boolean }> =
 		{ label: "101+", holds: (position) => position >= 101 },
 	];
 
-/** One reader per measured field, so the five metrics never drift apart here. */
-const FIELDS = {
-	input: (req: Req) => req.tokensIn,
-	output: (req: Req) => req.output,
-	reasoning: (req: Req) => req.reasoning,
-	cacheRead: (req: Req) => req.cacheRead,
-	cacheWrite: (req: Req) => req.cacheWrite,
-} satisfies Record<keyof Profile, (req: Req) => number>;
-
 const STAT_FIELDS = { ...FIELDS, cost: (req: Req) => req.cost };
-
-const FILLERS = {
-	input: 0,
-	output: 0,
-	reasoning: 0,
-	cacheRead: 0,
-	cacheWrite: 0,
-} satisfies Profile;
-
-function reqProfile(reqs: Req[]): Profile {
-	const profile: Profile = { ...FILLERS };
-	for (const [field, read] of Object.entries(FIELDS)) {
-		profile[field as keyof Profile] = mean(reqs.map(read));
-	}
-	return profile;
-}
 
 /**
  * One vote per conversation: average within each session, then across them, so
  * a single vast session cannot outweigh every short chat in the history.
  */
 function sessionProfile(sessions: Req[][]): Profile {
-	const profile: Profile = { ...FILLERS };
+	const profile = emptyProfile();
 	for (const [field, read] of Object.entries(FIELDS)) {
 		profile[field as keyof Profile] = mean(
 			sessions.map((session) => mean(session.map(read))),
@@ -123,6 +99,7 @@ export function buildShape(asks: Ask[]): Shape {
 		stats: record,
 		perReq: reqProfile(reqs),
 		perSession: sessionProfile([...bySession.values()]),
+		sides: sideProfiles(reqs),
 		buckets: bucketsOf(reqs),
 		models: modelsOf(reqs),
 	};

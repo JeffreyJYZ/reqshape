@@ -16,6 +16,8 @@ export interface RawMessage {
 	/** Prompt text, when the row carries any. */
 	text: string;
 	model: string;
+	/** Provider id; the legacy layout does not record which one served a turn. */
+	provider: string;
 	/** Absent while a turn is still streaming. */
 	tokens: RawTokens | null;
 	cost: number;
@@ -80,6 +82,7 @@ export function readV2(db: Database): RawMessage[] {
 			time: row.time_created,
 			text: text(data.text),
 			model: text(object(data.model).id),
+			provider: text(object(data.model).providerID),
 			tokens: (data.tokens as RawTokens | undefined) ?? null,
 			cost: numberOr(data.cost),
 		});
@@ -111,6 +114,7 @@ export function readLegacy(db: Database): RawMessage[] {
 			text:
 				text(data.text) || (typeof content === "string" ? content : ""),
 			model: text(data.modelID),
+			provider: "",
 			tokens: (data.tokens as RawTokens | undefined) ?? null,
 			cost: numberOr(data.cost),
 		});

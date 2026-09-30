@@ -32,8 +32,9 @@ src/measure/rows.ts      store rows -> RawMessage (v2 + legacy layouts)
 src/measure/store.ts     readStore: layout detection, session metadata merge
 src/measure/asks.ts      messages -> asks, with each req's position in its session
 src/measure/filter.ts    keep/drop decisions, normalisation, the keyword rule
-src/measure/stats.ts     mean + nearest-rank percentiles
-src/measure/profile.ts   buildShape: per-req and per-conversation vectors, buckets
+src/measure/stats.ts     FIELDS + reqProfile + mean + percentiles (one place a field is read)
+src/measure/profile.ts   buildShape: per-req, per-conversation and per-side vectors, buckets
+src/measure/sides.ts     sideOf + sideProfiles: provider id -> oc / cc
 src/market/rates.ts      RateEntry types and labels
 src/market/entries.ts    mpc payload -> entries, window ratios, custom entries
 src/market/sources.ts    the subprocess calls (mpc --json, cmduse -1 --json)
@@ -84,6 +85,15 @@ bun link                       # exposes the `reqshape` binary
   (20%/50% on OpenCode Go, 20%/50% on GOAT and Pro, 30%/60% on Max and Go).
 - `cmduse -1 --json`: `summary.requests`, `plan`, `periodEnd`. Missing or
   unauthenticated means no account line, never an error.
+- **Our own `--format json` is consumed by `mpc --shape measured`**, which reads
+  `sides.{oc,cc}.{reqs, profile{input,output,reasoning,cacheRead,cacheWrite}}`
+  and treats `profile` as a `Workload`. Keep those keys and keep `profile` a
+  bare token vector; mpc rounds the means, so a fractional mean here is fine.
+  The oc/cc split is decided here too (`command-code*`/`commandcode` → cc,
+  `opencode*` → oc, everything else excluded) — mpc trusts it, so a new
+  CommandCode provider id must be added to `CC_PREFIXES` in `sides.ts`.
+- `sides` is additive: an older consumer reading `perReq`/`perSession` is
+  unaffected, and a payload without `sides` is a fallback, not an error.
 
 ## Rules
 
@@ -130,7 +140,12 @@ bun link                       # exposes the `reqshape` binary
   zero means cached reads are stated free. Conflating them either fabricates a
   cost or hides one.
 - **Reasoning tokens bill as output** on every provider, so they join the output
-  term in `project()`.
+  term in `project()`. But `tokens.output` and `tokens.reasoning` in opencode's
+  store are *separate* counters, not a subset — a real row read `output 14,
+  reasoning 38` — so never fold one into the other while measuring, and never
+  bill it twice. Both tools now add it exactly once: `project()` here, and
+  mpc's `costPerRequest` since the per-side workload landed, each reproducing
+  the store's own priced `cost` for a GLM-5.3 turn (0.01242668).
 - **`requestsPerMonth` is `Infinity` for a free model** — JSON has no infinity,
   so it serialises to `null`. That means *unbounded*, not unknown, as the README
   says. Keep them out of comparisons: `sortProjections` compares explicitly

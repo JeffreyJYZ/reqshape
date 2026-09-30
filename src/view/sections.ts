@@ -1,4 +1,4 @@
-import type { DropCount, Shape } from "~/types.ts";
+import type { DropCount, Shape, Side } from "~/types.ts";
 import {
 	bold,
 	dim,
@@ -61,6 +61,30 @@ export function perReq(shape: Shape, weight: "turn" | "session"): string[] {
 				: `one vote per conversation instead: cache read ${fmtCount(session.cacheRead)} · input ${fmtCount(session.input)} · output ${fmtCount(session.output)}`,
 		),
 	];
+}
+
+/** What each plan's own traffic looks like, which is what mpc prices per side. */
+export function sides(shape: Shape): string[] {
+	const names: Record<Side, string> = {
+		oc: "OpenCode Go",
+		cc: "CommandCode",
+	};
+	const lines = (["oc", "cc"] as const).flatMap((side) => {
+		const measured = shape.sides[side];
+		if (!measured) return [];
+		const { profile, reqs } = measured;
+		return [
+			[
+				`${pad(names[side], 12)}`,
+				`input ${pad(fmtCount(profile.input), 8, "right")}`,
+				`output ${pad(fmtCount(profile.output), 7, "right")}`,
+				`cache read ${pad(fmtCount(profile.cacheRead), 9, "right")}`,
+				dim(`${fmtInt(reqs)} reqs`),
+			].join("  "),
+		];
+	});
+	if (lines.length === 0) return [];
+	return [dim("each side priced on its own traffic"), ...lines];
 }
 
 export function position(shape: Shape): string[] {

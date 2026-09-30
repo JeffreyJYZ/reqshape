@@ -9,6 +9,7 @@ import {
 	models,
 	perReq,
 	position,
+	sides,
 } from "./sections.ts";
 import { tableBody, tableHeader, tableRule } from "./table.ts";
 
@@ -42,6 +43,8 @@ export function renderText(report: Report): string {
 		...block("DROPPED", dropLines(report.drops, report.explain)),
 		"",
 		...block("PER REQ", perReq(shape, weight)),
+		"",
+		...block("PER SIDE", sides(shape)),
 		"",
 		...block("POSITION", position(shape)),
 		"",

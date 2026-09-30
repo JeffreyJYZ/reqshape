@@ -16,6 +16,7 @@ function message(
 		time,
 		text: "",
 		model: "glm-5.2",
+		provider: "opencode-go",
 		tokens: null,
 		cost: 0,
 		...extra,

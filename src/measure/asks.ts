@@ -19,6 +19,7 @@ function toReq(message: RawMessage, position: number): Req {
 	const tokens = message.tokens;
 	return {
 		model: message.model,
+		provider: message.provider,
 		tokensIn: numberOr(tokens?.input),
 		output: numberOr(tokens?.output),
 		reasoning: numberOr(tokens?.reasoning),

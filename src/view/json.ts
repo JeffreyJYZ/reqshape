@@ -22,6 +22,7 @@ export function renderJson(input: JsonInput): string {
 		weight: input.weight,
 		store: input.layout,
 		profile: input.profile,
+		sides: input.shape.sides,
 		shape: input.shape,
 		drops: input.drops,
 		models: input.projections.map((projection) => ({

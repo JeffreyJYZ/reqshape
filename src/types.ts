@@ -6,6 +6,8 @@
 export interface Req {
 	/** Provider model id as the store recorded it, e.g. `deepseek/deepseek-v4.1-flash`. */
 	model: string;
+	/** Provider id as the store recorded it, e.g. `command-code-openai`. */
+	provider: string;
 	tokensIn: number;
 	output: number;
 	reasoning: number;
@@ -61,6 +63,18 @@ export interface Profile {
 	cacheWrite: number;
 }
 
+/**
+ * The two plans the pricing compares. Traffic divides between them by provider
+ * id, and each side serves a different shape of request.
+ */
+export type Side = "oc" | "cc";
+
+/** One plan's own traffic, measured on its own. */
+export interface SideShape {
+	reqs: number;
+	profile: Profile;
+}
+
 /** Reqs grouped by how far into their session they sit. */
 export interface Bucket {
 	label: string;
@@ -91,6 +105,8 @@ export interface Shape {
 	perReq: Profile;
 	/** Mean of per-ask means, so one vast session cannot set the profile. */
 	perSession: Profile;
+	/** Per-side means, so each plan can be priced on its own traffic. */
+	sides: Partial<Record<Side, SideShape>>;
 	buckets: Bucket[];
 	models: Array<{ name: string; reqs: number }>;
 }

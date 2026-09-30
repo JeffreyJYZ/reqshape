@@ -8,6 +8,7 @@ function req(
 ): Req {
 	return {
 		model: "glm-5.2",
+		provider: "opencode-go",
 		tokensIn: values.input ?? 100,
 		output: values.output ?? 10,
 		reasoning: 0,

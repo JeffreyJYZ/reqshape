@@ -16,6 +16,7 @@ const OPTIONS: FilterOptions = {
 function req(output = 100, position = 1): Req {
 	return {
 		model: "glm-5.2",
+		provider: "opencode-go",
 		tokensIn: 10,
 		output,
 		reasoning: 0,

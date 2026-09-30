@@ -19,6 +19,10 @@ PER REQ   input 8.2K · output 309 · reasoning 139 · cache read 248.0K · cach
           p10/p90  input 67/9.2K · output 46/701 · cache read 1.9K/648.7K
           one vote per conversation instead: cache read 64.0K · input 10.4K · output 216
 
+PER SIDE  each side priced on its own traffic
+          OpenCode Go   input     7.2K  output     296  cache read    134.8K  3,684 reqs
+          CommandCode   input     3.7K  output     337  cache read    397.0K  3,360 reqs
+
 POSITION  how far into its session the req sat — every call re-reads the context
           pos 1        cache read      579  input    8.5K  output     75  28 reqs
           pos 2-5      cache read     9.9K  input    4.9K  output    180  107 reqs
@@ -146,5 +150,14 @@ Omit `--cache-read` and the context is billed at the input rate, flagged `*`.
   restated here where it could drift.
 - **The account line** — `cmduse -1 --json`, purely as context for how much of
   your usage this profile covers. If it cannot answer, the line is simply absent.
+
+### Per side, and back into `mpc`
+
+`--format json` carries `sides.oc` and `sides.cc`: the same measured profile
+split by whose traffic it is (requests to `opencode*` vs `command-code*`),
+with each side's own request count. `mpc --shape measured` reads exactly that
+payload and prices each plan on its side's shape, so its estimated `req/mo` is
+"how many of *my* requests fit" instead of a fixed 800-in / 50K-cache /
+200-out assumption.
 
 Runs take about 20 seconds: both `mpc` and `cmduse` go to the network.

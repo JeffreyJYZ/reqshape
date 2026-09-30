@@ -66,6 +66,28 @@ export function shape(overrides: Partial<Shape> = {}): Shape {
 			cacheRead: 64_000,
 			cacheWrite: 5,
 		},
+		sides: {
+			oc: {
+				reqs: 4_582,
+				profile: {
+					input: 9_100,
+					output: 320,
+					reasoning: 140,
+					cacheRead: 210_000,
+					cacheWrite: 9,
+				},
+			},
+			cc: {
+				reqs: 4_836,
+				profile: {
+					input: 7_100,
+					output: 290,
+					reasoning: 130,
+					cacheRead: 295_000,
+					cacheWrite: 7,
+				},
+			},
+		},
 		buckets: [
 			{ label: "1", reqs: 28, input: 8_500, output: 75, cacheRead: 579 },
 			{
