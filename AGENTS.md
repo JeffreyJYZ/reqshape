@@ -61,6 +61,16 @@ bun run src/index.ts --help
 bun link                       # exposes the `reqshape` binary
 ```
 
+**`bun link` must be re-run after the repo moves, and can be silently pruned.**
+It writes `~/.bun/bin/reqshape` → `~/.bun/install/global/node_modules/reqshape/src/index.ts`,
+and that global symlink holds an **absolute** path. Moving this checkout (`~/dev/clis/reqshape`
+→ `~/dev/cmdcode-tools/reqshape`) left it pointing at the dead old location — and once it
+dangled, a later `bun link` in a sibling repo pruned the whole entry, so the `reqshape` bin
+vanished. The failure is quiet: `command -v reqshape` prints nothing, and only a consumer
+(`mpc --shape measured` shells it) notices. Fix: `bun link` here; verify with
+`test -e ~/.bun/install/global/node_modules/reqshape/src/index.ts` (the bin symlink survives
+dangling, so `ls -l` on it proves nothing).
+
 ## The lexicon
 
 - **req** — one model call: one `assistant` row. This is the sidebar's unit and
