@@ -96,6 +96,20 @@ describe("parseArgs", () => {
 		);
 	});
 
+	test("a lone window cap or label is not silently dropped", () => {
+		// `customOf` used to watch only the rate/budget flags, so these parsed
+		// and then vanished (`custom: null`). They now demand the full spec.
+		expect(() => parseArgs(["--five-hour", "12"])).toThrow(
+			/--budget <usd> is required/,
+		);
+		expect(() => parseArgs(["--weekly", "30"])).toThrow(
+			/--budget <usd> is required/,
+		);
+		expect(() => parseArgs(["--label", "x"])).toThrow(
+			/--budget <usd> is required/,
+		);
+	});
+
 	test("negations read as the option being off", () => {
 		expect(parseArgs(["--no-account"]).account).toBe(false);
 		expect(parseArgs(["--no-color"]).color).toBe("never");

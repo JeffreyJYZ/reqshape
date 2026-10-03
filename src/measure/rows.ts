@@ -16,7 +16,7 @@ export interface RawMessage {
 	/** Prompt text, when the row carries any. */
 	text: string;
 	model: string;
-	/** Provider id; the legacy layout does not record which one served a turn. */
+	/** Provider id, as `model.providerID` (v2) or `providerID` (legacy). */
 	provider: string;
 	/** Absent while a turn is still streaming. */
 	tokens: RawTokens | null;
@@ -114,7 +114,9 @@ export function readLegacy(db: Database): RawMessage[] {
 			text:
 				text(data.text) || (typeof content === "string" ? content : ""),
 			model: text(data.modelID),
-			provider: "",
+			// The legacy payload records `providerID` too; hardcoding "" here
+			// made every legacy session emit no `sides` at all.
+			provider: text(data.providerID),
 			tokens: (data.tokens as RawTokens | undefined) ?? null,
 			cost: numberOr(data.cost),
 		});

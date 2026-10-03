@@ -129,6 +129,9 @@ describe("readStore", () => {
 		]);
 		expect(store.messages[1]?.model).toBe("deepseek/deepseek-v4.1-flash");
 		expect(store.messages[1]?.tokens?.input).toBe(10);
+		// The legacy payload carries `providerID`; reading it is what lets a
+		// legacy store produce a PER SIDE section at all.
+		expect(store.messages[1]?.provider).toBe("cc");
 		// No session table: still readable, just unattributed.
 		expect(store.sessions.size).toBe(0);
 	});

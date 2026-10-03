@@ -108,5 +108,8 @@ export interface Shape {
 	/** Per-side means, so each plan can be priced on its own traffic. */
 	sides: Partial<Record<Side, SideShape>>;
 	buckets: Bucket[];
+	/** Distinct models seen, before `models` is capped for display. */
+	modelTotal: number;
+	/** Top models by req count, capped at 8. */
 	models: Array<{ name: string; reqs: number }>;
 }

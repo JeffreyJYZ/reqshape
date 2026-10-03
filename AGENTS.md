@@ -164,6 +164,22 @@ dangling, so `ls -l` on it proves nothing).
   per-req mean by silently switching to per-session; both are printed and
   `--weight` picks, because they disagree by 4x and the user should see why.
 
+- **Only a `user` row opens an ask; interjections continue it.** `synthetic` / `system` /
+  `compaction` / `shell` rows used to be boundaries too, so a system-reminder that lands after the
+  prompt and before its answer made the answer's reqs a `system` ask — which `filterAsks` then
+  discarded whole. They now attach to the ask they interrupted. `orphan` still catches reqs before
+  any user prompt. (The `AskKind` union keeps the old names for typing, but `buildAsks` no longer
+  emits them.)
+- **A legacy store's `providerID` is real.** `readLegacy` hardcoded `provider: ""`, so a
+  `message`-only store produced no `sides` and the whole PER SIDE section vanished — but
+  `message.data` carries `providerID` just like v2's `model.providerID`.
+- **`customOf` watches every custom-model flag.** `--five-hour` / `--weekly` / `--label` on their
+  own used to be ignored (`custom: null`, no error) because only the rate/budget flags set
+  `touched`; now a lone one demands the rates + `--budget` like any other custom run.
+- **The MODELS line's "…N more" needs the true total.** `modelsOf` caps the display list at 8;
+  `Shape.modelTotal` carries the count before the cap, so the suffix is not the constant
+  `capped - 6`.
+
 ## Not in scope
 
 - Registering providers or inventing plans — rates come from `mpc`, which reads

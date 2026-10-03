@@ -98,6 +98,7 @@ export function shape(overrides: Partial<Shape> = {}): Shape {
 				cacheRead: 301_800,
 			},
 		],
+		modelTotal: 1,
 		models: [{ name: "deepseek/deepseek-v4.1-flash", reqs: 2_700 }],
 		...overrides,
 	};

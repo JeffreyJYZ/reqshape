@@ -40,6 +40,7 @@ describe("buildShape", () => {
 		expect(shape.perSession.cacheRead).toBe(0);
 		expect(shape.buckets).toEqual([]);
 		expect(shape.models).toEqual([]);
+		expect(shape.modelTotal).toBe(0);
 		expect(shape.first).toBe(0);
 	});
 
@@ -132,6 +133,9 @@ describe("buildShape", () => {
 		expect(shape.models).toHaveLength(8);
 		expect(shape.models[0]?.name).toBe("vendor/model-0");
 		expect(shape.models[0]?.reqs).toBe(1);
+		// The display list is capped, but the report's "…N more" needs the true
+		// total, not `capped - 6`.
+		expect(shape.modelTotal).toBe(12);
 	});
 
 	test("stats carry the shape of the distribution", () => {

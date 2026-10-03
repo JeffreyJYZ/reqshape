@@ -68,27 +68,26 @@ describe("buildAsks", () => {
 		expect(asks[0]?.reqs).toHaveLength(2);
 	});
 
-	test("every boundary opens its own ask, tagged with what it was", () => {
+	test("interjections continue the ask instead of opening one", () => {
 		const asks = buildAsks(
 			[
 				message("user", 1_000, { text: "hi" }),
 				message("assistant", 1_100, { tokens: tokens(1, 1) }),
 				message("synthetic", 2_000, { text: "continue" }),
 				message("assistant", 2_100, { tokens: tokens(1, 1) }),
-				message("compaction", 3_000, { text: "summary" }),
-				message("shell", 4_000),
-				message("system", 5_000),
+				message("system", 3_000),
+				message("assistant", 3_100, { tokens: tokens(1, 1) }),
+				message("compaction", 4_000, { text: "summary" }),
+				message("shell", 5_000),
+				message("assistant", 5_100, { tokens: tokens(1, 1) }),
 			],
 			sessions,
 		);
-		expect(asks.map((ask) => ask.kind)).toEqual([
-			"user",
-			"synthetic",
-			"compaction",
-			"shell",
-			"system",
-		]);
-		expect(asks.map((ask) => ask.reqs.length)).toEqual([1, 1, 0, 0, 0]);
+		// One user ask holds every req: the interjections did not split it, so
+		// the responses that followed them are no longer dropped with it.
+		expect(asks).toHaveLength(1);
+		expect(asks[0]?.kind).toBe("user");
+		expect(asks[0]?.reqs).toHaveLength(4);
 	});
 
 	test("streaming turns are skipped and reqs before a prompt are kept as orphans", () => {

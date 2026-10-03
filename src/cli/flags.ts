@@ -76,12 +76,18 @@ export function keywordList(value: unknown): string[] | undefined {
 
 /** Custom rates only make sense with something to price them against. */
 export function customOf(flags: Record<string, unknown>): CustomRates | null {
+	// Any custom-model flag counts as "this run is about a custom model". The
+	// window caps and label were previously ignored on their own (`customOf`
+	// returned null and they vanished); now they demand the rates + budget too.
 	const touched =
 		flags.in !== undefined ||
 		flags.out !== undefined ||
 		flags.cacheRead !== undefined ||
 		flags.cacheWrite !== undefined ||
-		flags.budget !== undefined;
+		flags.budget !== undefined ||
+		flags.fiveHour !== undefined ||
+		flags.weekly !== undefined ||
+		flags.label !== undefined;
 	if (!touched) return null;
 	const budget = number(flags.budget, "budget");
 	if (budget <= 0) {

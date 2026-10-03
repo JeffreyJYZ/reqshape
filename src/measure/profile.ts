@@ -46,16 +46,22 @@ function bucketsOf(reqs: Req[]): Bucket[] {
 	return buckets;
 }
 
-function modelsOf(reqs: Req[]): Array<{ name: string; reqs: number }> {
+function modelsOf(reqs: Req[]): {
+	list: Array<{ name: string; reqs: number }>;
+	total: number;
+} {
 	const counts = new Map<string, number>();
 	for (const req of reqs) {
 		const name = req.model || "unknown";
 		counts.set(name, (counts.get(name) ?? 0) + 1);
 	}
-	return [...counts.entries()]
-		.map(([name, count]) => ({ name, reqs: count }))
-		.sort((a, b) => b.reqs - a.reqs)
-		.slice(0, 8);
+	return {
+		list: [...counts.entries()]
+			.map(([name, count]) => ({ name, reqs: count }))
+			.sort((a, b) => b.reqs - a.reqs)
+			.slice(0, 8),
+		total: counts.size,
+	};
 }
 
 /**
@@ -89,6 +95,7 @@ export function buildShape(asks: Ask[]): Shape {
 		record[field as keyof Profile | "cost"] = stats(reqs.map(read));
 	}
 
+	const models = modelsOf(reqs);
 	return {
 		reqs: reqs.length,
 		asks: asks.length,
@@ -101,6 +108,7 @@ export function buildShape(asks: Ask[]): Shape {
 		perSession: sessionProfile([...bySession.values()]),
 		sides: sideProfiles(reqs),
 		buckets: bucketsOf(reqs),
-		models: modelsOf(reqs),
+		modelTotal: models.total,
+		models: models.list,
 	};
 }
