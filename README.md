@@ -154,8 +154,8 @@ Omit `--cache-read` and the context is billed at the input rate, flagged `*`.
 ### Per side, and back into `mpc`
 
 `--format json` carries `sides.oc` and `sides.cc`: the same measured profile
-split by whose traffic it is (requests to `opencode*` vs `command-code*`),
-with each side's own request count. `mpc --shape measured` reads exactly that
+split by whose traffic it is (requests to `opencode*` vs the `CC_PREFIXES`
+ids), with each side's own request count. `mpc --shape measured` reads exactly that
 payload and prices each plan on its side's shape, so its estimated `req/mo` is
 "how many of *my* requests fit" instead of a fixed 800-in / 50K-cache /
 200-out assumption.

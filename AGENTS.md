@@ -24,7 +24,12 @@ Sibling tooling it depends on, same author:
 ```
 src/index.ts             entry
 src/types.ts             Req (one model call), Ask, Profile, Shape, Stats
-src/cli/options.ts       Options, DEFAULTS, the default keyword list
+src/constants/keywords.ts  DEFAULT_KEYWORDS + FILLER (noise filtering)
+src/constants/providers.ts CC_PREFIXES (CommandCode provider ids)
+src/constants/asks.ts    BOUNDARY (row kind -> AskKind)
+src/constants/layout.ts  LABEL + table column widths
+src/constants/ansi.ts    ESC + ANSI
+src/cli/options.ts       Options, defaultOptions
 src/cli/flags.ts         flag readers: str, number, oneOf, sinceOf, keywordList, customOf
 src/cli/parse.ts         cac declarations -> Options
 src/cli/run.ts           orchestration
@@ -102,7 +107,7 @@ dangling, so `ls -l` on it proves nothing).
   is still emitted for our own report but mpc no longer reads it. The oc/cc split
   is still decided here (`command-code*`/`commandcode` → cc, `opencode*` → oc,
   everything else excluded), so a new CommandCode provider id must be added to
-  `CC_PREFIXES` in `sides.ts`.
+  `CC_PREFIXES` in `src/constants/providers.ts`.
 - `sides` is additive: an older consumer reading `perReq`/`perSession` is
   unaffected, and a payload without `sides` is a fallback, not an error.
 

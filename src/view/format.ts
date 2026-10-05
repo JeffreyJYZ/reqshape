@@ -1,3 +1,5 @@
+import { ANSI } from "~/constants/ansi.ts";
+
 let colored = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
 
 export function setColorMode(on: boolean): void {
@@ -10,11 +12,6 @@ function wrap(code: string, text: string): string {
 
 export const bold = (text: string): string => wrap("1", text);
 export const dim = (text: string): string => wrap("2", text);
-
-// Biome forbids control characters in regex literals, and a literal escape here
-// would be one: build the pattern from a codepoint instead.
-const ESC = String.fromCharCode(27);
-const ANSI = new RegExp(`${ESC}\\[[0-9;]*m`, "g");
 
 /** Pad to a visible width, truncating with an ellipsis rather than wrapping. */
 export function pad(

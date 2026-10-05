@@ -1,3 +1,4 @@
+import { FILLER } from "~/constants/keywords.ts";
 import type { Ask, DropCount } from "~/types.ts";
 
 export interface FilterOptions {
@@ -26,25 +27,6 @@ export function normalizePrompt(text: string): string {
 		.replace(/\s+/g, " ")
 		.trim();
 }
-
-/**
- * Filler that rides along with an acknowledgement — `hey there`, `continue
- * please`, `thanks bro`. Only the all-words rule consults it, and it still
- * needs a real keyword in the prompt, so a filler-heavy *ask* survives.
- */
-const FILLER = new Set([
-	"there",
-	"then",
-	"again",
-	"please",
-	"pls",
-	"bro",
-	"man",
-	"dude",
-	"guys",
-	"all",
-	"everyone",
-]);
 
 /**
  * Why this prompt is noise, or null when it is worth profiling. A prompt made

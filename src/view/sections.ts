@@ -1,3 +1,4 @@
+import { LABEL } from "~/constants/layout.ts";
 import type { DropCount, Shape, Side } from "~/types.ts";
 import {
 	bold,
@@ -9,8 +10,6 @@ import {
 	pad,
 	prettyModel,
 } from "./format.ts";
-
-export const LABEL = 10;
 
 export function block(label: string, lines: string[]): string[] {
 	return lines.map((line, index) =>

@@ -9,7 +9,7 @@ import {
 	sinceOf,
 	str,
 } from "./flags.ts";
-import { DEFAULT_KEYWORDS, defaultOptions, type Options } from "./options.ts";
+import { defaultOptions, type Options } from "./options.ts";
 
 export function parseArgs(argv: string[]): Options {
 	const cli = cac("reqshape");
@@ -99,5 +99,3 @@ export function parseArgs(argv: string[]): Options {
 
 	return options;
 }
-
-export { DEFAULT_KEYWORDS };

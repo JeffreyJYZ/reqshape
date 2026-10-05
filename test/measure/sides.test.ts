@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { CC_PREFIXES } from "~/constants/providers.ts";
 import { sideOf, sideProfiles } from "~/measure/sides.ts";
 import type { Req } from "~/types.ts";
 
@@ -20,10 +21,9 @@ function req(provider: string, values: Partial<Req> = {}): Req {
 describe("sideOf", () => {
 	test("every provider variant the CommandCode plugin registers is cc", () => {
 		for (const id of [
-			"command-code",
+			...CC_PREFIXES,
 			"command-code-openai",
 			"command-code-anthropic",
-			"commandcode",
 		]) {
 			expect(sideOf(id)).toBe("cc");
 		}

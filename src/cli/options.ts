@@ -1,3 +1,4 @@
+import { DEFAULT_KEYWORDS } from "~/constants/keywords.ts";
 import type { CustomRates } from "~/market/rates.ts";
 import { defaultStorePath } from "~/measure/store.ts";
 
@@ -27,79 +28,6 @@ export interface Options {
 	cmduse: string;
 	custom: CustomRates | null;
 }
-
-/**
- * Prompts that ask for nothing worth modelling: acknowledgements, greetings,
- * and the one-word nudges an agentic loop hands back. Matched after punctuation
- * is stripped, so `Hi!` and `thanks.` land here too.
- */
-export const DEFAULT_KEYWORDS = [
-	"hi",
-	"hi there",
-	"hey",
-	"hello",
-	"hello there",
-	"yo",
-	"sup",
-	"hiya",
-	"howdy",
-	"thanks",
-	"thank you",
-	"ty",
-	"thx",
-	"cheers",
-	"nice",
-	"great",
-	"awesome",
-	"perfect",
-	"cool",
-	"sweet",
-	"lovely",
-	"well done",
-	"good job",
-	"nice work",
-	"ok",
-	"okay",
-	"k",
-	"sure",
-	"yes",
-	"yeah",
-	"yep",
-	"y",
-	"no",
-	"nope",
-	"nah",
-	"n",
-	"continue",
-	"go",
-	"go on",
-	"go ahead",
-	"proceed",
-	"next",
-	"carry on",
-	"keep going",
-	"resume",
-	"done",
-	"stop",
-	"wait",
-	"hold on",
-	"hmm",
-	"hm",
-	"oh",
-	"ah",
-	"i see",
-	"got it",
-	"makes sense",
-	"make sense",
-	"sounds good",
-	"looks good",
-	"lgtm",
-	"agreed",
-	"right",
-	"correct",
-	"exactly",
-	"indeed",
-];
 
 export function defaultOptions(): Options {
 	return {

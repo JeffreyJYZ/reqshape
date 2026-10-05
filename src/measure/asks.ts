@@ -1,19 +1,7 @@
+import { BOUNDARY } from "~/constants/asks.ts";
 import type { Ask, AskKind, Req } from "~/types.ts";
 import type { RawMessage } from "./rows.ts";
 import type { SessionRow } from "./store.ts";
-
-/**
- * Row kinds that *open* a new ask. Only a prompt the user typed does.
- *
- * `synthetic` / `system` / `compaction` / `shell` rows are interjections: a
- * system-reminder lands after the prompt and before its answer, so treating one
- * as a boundary filed the answer's reqs under the interjection, which the
- * filter then discarded along with the whole response. They now continue the
- * ask they interrupted.
- */
-const BOUNDARY: Record<string, AskKind> = {
-	user: "user",
-};
 
 function numberOr(value: unknown): number {
 	return typeof value === "number" && Number.isFinite(value) ? value : 0;

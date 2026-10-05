@@ -1,8 +1,6 @@
+import { CC_PREFIXES } from "~/constants/providers.ts";
 import type { Req, Side, SideShape } from "~/types.ts";
 import { reqProfile } from "./stats.ts";
-
-/** Provider ids that mean CommandCode: the CLI, and the plugin's API variants. */
-const CC_PREFIXES = ["command-code", "commandcode"];
 
 /** Which plan a provider id's traffic belongs to; null when it is neither. */
 export function sideOf(providerID: string): Side | null {
