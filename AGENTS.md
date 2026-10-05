@@ -96,12 +96,13 @@ dangling, so `ls -l` on it proves nothing).
 - `cmduse -1 --json`: `summary.requests`, `plan`, `periodEnd`. Missing or
   unauthenticated means no account line, never an error.
 - **Our own `--format json` is consumed by `mpc --shape measured`**, which reads
-  `sides.{oc,cc}.{reqs, profile{input,output,reasoning,cacheRead,cacheWrite}}`
-  and treats `profile` as a `Workload`. Keep those keys and keep `profile` a
-  bare token vector; mpc rounds the means, so a fractional mean here is fine.
-  The oc/cc split is decided here too (`command-code*`/`commandcode` → cc,
-  `opencode*` → oc, everything else excluded) — mpc trusts it, so a new
-  CommandCode provider id must be added to `CC_PREFIXES` in `sides.ts`.
+  the top-level `profile` (the same vector as `shape.perReq`) as a single
+  `Workload` and prices **both** plans on it. Keep `profile` a bare token
+  vector; mpc rounds the means, so a fractional mean here is fine. `sides.{oc,cc}`
+  is still emitted for our own report but mpc no longer reads it. The oc/cc split
+  is still decided here (`command-code*`/`commandcode` → cc, `opencode*` → oc,
+  everything else excluded), so a new CommandCode provider id must be added to
+  `CC_PREFIXES` in `sides.ts`.
 - `sides` is additive: an older consumer reading `perReq`/`perSession` is
   unaffected, and a payload without `sides` is a fallback, not an error.
 
