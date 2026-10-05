@@ -14,7 +14,7 @@ Sibling tooling it depends on, same author:
 
 | tool | what reqshape takes from it |
 | --- | --- |
-| `mpc` (`~/dev/cmdcode-tools/oc-cmd-compare`) | `mpc --json` — per-model pricing, allowances, and the window ratios derived from `requestsPerFiveHour / requestsPerMonth` |
+| `mpc` (`~/dev/cmdcode-tools/oc-cmd-compare`) | `mpc --json --shape off` — per-model pricing, allowances, and the window ratios derived from `requestsPerFiveHour / requestsPerMonth` (the `--shape off` is mandatory: see Contracts) |
 | `cmduse` (Rust CLI) | `cmduse -1 --json` — the account's own request count for the period, printed as a context line only |
 
 `MPC_BIN` / `CMDUSE_BIN` point either call at a dev build.
@@ -100,14 +100,23 @@ dangling, so `ls -l` on it proves nothing).
   (20%/50% on OpenCode Go, 20%/50% on GOAT and Pro, 30%/60% on Max and Go).
 - `cmduse -1 --json`: `summary.requests`, `plan`, `periodEnd`. Missing or
   unauthenticated means no account line, never an error.
-- **Our own `--format json` is consumed by `mpc --shape measured`**, which reads
-  the top-level `profile` (the same vector as `shape.perReq`) as a single
-  `Workload` and prices **both** plans on it. Keep `profile` a bare token
-  vector; mpc rounds the means, so a fractional mean here is fine. `sides.{oc,cc}`
-  is still emitted for our own report but mpc no longer reads it. The oc/cc split
-  is still decided here (`command-code*`/`commandcode` → cc, `opencode*` → oc,
-  everything else excluded), so a new CommandCode provider id must be added to
-  `CC_PREFIXES` in `src/constants/providers.ts`.
+- **Our own `--format json` is consumed by `mpc`'s default `--shape auto` (and by
+  `--shape measured`)**, which reads the top-level `profile` (the same vector as
+  `shape.perReq`) as a single `Workload` and prices **both** plans on it. Keep
+  `profile` a bare token vector; mpc rounds the means, so a fractional mean here
+  is fine. `auto` also reads `shape.reqs` and only trusts the profile once it
+  reaches mpc's `SHAPE_MIN_REQS`, so **`shape.reqs` must stay the true count of
+  kept reqs** — a wrong number silently flips mpc between measured and the fixed
+  workload. `sides.{oc,cc}` is still emitted for our own report but mpc no longer
+  reads it. The oc/cc split is still decided here (`command-code*`/`commandcode`
+  → cc, `opencode*` → oc, everything else excluded), so a new CommandCode
+  provider id must be added to `CC_PREFIXES` in `src/constants/providers.ts`.
+- **`loadMpc` must call `mpc --json --shape off`.** mpc's default is now
+  `--shape auto`, which shells out to `reqshape`; since reqshape itself runs
+  `mpc --json`, dropping the flag recurses (mpc -> reqshape -> mpc -> ...). The
+  flag is not optional sugar — it is the cycle break. (mpc also guards this from
+  its side: it marks the reqshape child with `MPC_SHAPE_RESOLVING`, so a nested
+  mpc keeps the fixed workload; the flag is still the cheap, explicit path.)
 - `sides` is additive: an older consumer reading `perReq`/`perSession` is
   unaffected, and a payload without `sides` is a fallback, not an error.
 

@@ -31,7 +31,11 @@ function runJson<T>(bin: string, args: string[]): T {
 
 /** mpc knows both plans' pricing, allowances and window rules. */
 export function loadMpc(bin: string): MpcJson {
-	return runJson<MpcJson>(bin, ["--json"]);
+	// `--shape off`: reqshape only needs mpc's pricing and allowances, and it
+	// has no workload of its own to price here. mpc's default `--shape auto`
+	// shells out to reqshape, so without the flag this call would recurse
+	// (mpc -> reqshape -> mpc -> ...).
+	return runJson<MpcJson>(bin, ["--json", "--shape", "off"]);
 }
 
 /**
